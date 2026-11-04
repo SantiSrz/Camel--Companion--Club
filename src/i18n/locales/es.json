@@ -419,6 +419,7 @@
   "licensing": {
     "title": "Licencias institucionales",
     "subtitle": "Soporte, despliegue y formación docente",
+    "contributionNote": "El 10 % de cada cobro se destina a asociaciones que apoyan a colegios con pocos recursos.",
     "once": "Pago único",
     "coverage": "Hasta {{count}} centros",
     "coverage_one": "Hasta {{count}} centro",
@@ -443,7 +444,8 @@
     "capacityChanged": "Ya no quedan cupos suficientes para esta selección. Actualiza los paquetes.",
     "unavailable": "No se puede iniciar el pago ahora. Inténtalo de nuevo más tarde.",
     "notReady": "La contratación no está disponible en este momento.",
-    "test": "Modo de pruebas · No se cobra dinero real",
+    "test": "Stripe en modo de pruebas · No se cobra dinero real",
+    "live": "Stripe en modo real · Los pagos cobrarán dinero real",
     "tax": "Impuestos incluidos según cálculo en el pago",
     "refresh": "Actualizar cupos",
     "resultTitle": "Estado de contratación",

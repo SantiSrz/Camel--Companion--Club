@@ -419,6 +419,7 @@
   "licensing": {
     "title": "Licences institutionnelles",
     "subtitle": "Accompagnement, déploiement et formation des enseignants",
+    "contributionNote": "10 % de chaque paiement est destiné à des associations qui soutiennent les écoles aux ressources limitées.",
     "once": "Paiement unique",
     "coverage": "Jusqu’à {{count}} établissements",
     "coverage_one": "Jusqu’à {{count}} établissement",
@@ -443,7 +444,8 @@
     "capacityChanged": "Il ne reste plus assez de places pour cette sélection. Actualisez les offres.",
     "unavailable": "Le paiement ne peut pas démarrer maintenant. Réessayez plus tard.",
     "notReady": "La souscription est momentanément indisponible.",
-    "test": "Mode test · Aucun argent réel n’est débité",
+    "test": "Stripe en mode test · Aucun argent réel n’est débité",
+    "live": "Stripe en mode réel · Les paiements débiteront de l’argent réel",
     "tax": "Taxes incluses selon le calcul au paiement",
     "refresh": "Actualiser les places",
     "resultTitle": "État de souscription",

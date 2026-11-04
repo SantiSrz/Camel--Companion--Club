@@ -419,6 +419,7 @@
   "licensing": {
     "title": "Institutional licences",
     "subtitle": "Support, deployment and teacher training",
+    "contributionNote": "10% of each payment goes to associations that support schools with limited resources.",
     "once": "One-time payment",
     "coverage": "Up to {{count}} schools",
     "coverage_one": "Up to {{count}} school",
@@ -443,7 +444,8 @@
     "capacityChanged": "There are no longer enough places for this selection. Refresh the packages.",
     "unavailable": "Payment cannot be started right now. Please try again later.",
     "notReady": "Purchasing is currently unavailable.",
-    "test": "Test mode · No real money is charged",
+    "test": "Stripe test mode · No real money is charged",
+    "live": "Stripe live mode · Payments will charge real money",
     "tax": "Tax included as calculated at checkout",
     "refresh": "Refresh availability",
     "resultTitle": "Purchase status",

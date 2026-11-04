@@ -40,6 +40,26 @@ Las escuelas generan diariamente miles de datos sobre asistencia, aprendizaje, f
 * **Modelo:** Pipeline con `StandardScaler` y `RandomForestClassifier` optimizado mediante validación cruzada (`GridSearchCV`, `class_weight="balanced"`).
 * **Explicabilidad:** Extracción de importancia de características global y atribución local por estudiante para justificar cada alerta preventiva.
 
+## 💳 Probar pagos Stripe en modo test
+
+La contratación usa Stripe Checkout y guarda las reservas/licencias en Supabase. Para probarla localmente:
+
+1. En Stripe, activa **Test mode** y copia la clave secreta que empieza por `sk_test_`.
+2. En Supabase, abre **Project Settings → API Keys** y copia la clave **Secret** del proyecto de pruebas (nunca la Publishable key para esta variable).
+3. Añade estas variables a `.env.local`, sin el prefijo `VITE_` para los secretos:
+
+   ```env
+   SUPABASE_URL=https://TU-PROJECT-REF.supabase.co
+   SUPABASE_SERVICE_ROLE_KEY=TU-SUPABASE-SECRET-KEY
+   STRIPE_SECRET_KEY=sk_test_TU_CLAVE
+   STRIPE_ALLOWED_ORIGINS=http://localhost:8080
+   ```
+
+   Conserva también las variables `VITE_SUPABASE_URL` y `VITE_SUPABASE_PUBLISHABLE_KEY` ya configuradas. No publiques ni compartas `.env.local`; las claves `SUPABASE_SERVICE_ROLE_KEY` y `STRIPE_SECRET_KEY` solo se usan en el servidor.
+4. En Stripe, habilita **Automatic Tax** para usar el checkout fiscal configurado por la app. Inicia el servidor con `npm run dev` y completa un pago con la tarjeta de pruebas `4242 4242 4242 4242`, una fecha futura y cualquier CVC.
+
+El servidor detecta el modo de pruebas a partir de `sk_test_`; las licencias solo se activan después de verificar el pago completado con Stripe. No hace falta configurar un webhook para esta prueba local.
+
 ---
 
 ## 🚀 Estructura del Repositorio e Instalación
