@@ -1,74 +1,130 @@
-https://github.com/SantiSrz/Camel--Companion--Club.git
-# 🐪 EduPulse — Inteligencia Educativa y Apoyo a la Decisión Docente
+# EduPulse
 
-> **Proyecto desarrollado para la VII Edición Internacional de #hack4edu (3–7 de noviembre de 2026)**  
-> **Reto abordado:** Reto 13 · *La escuela que aprende de sus datos* (Reto ProFuturo)  
-> **Demo en vivo:** [https://camel-companion-club.lovable.app](https://camel-companion-club.lovable.app)
+Plataforma de seguimiento educativo para ayudar a docentes y centros a revisar indicadores, detectar señales tempranas y organizar apoyos pedagógicos. Proyecto presentado a **#hack4edu 2026**, en el reto ProFuturo de educación digital inclusiva.
 
----
+> **Estado del producto:** MVP de hackathon. Las señales actuales son reglas transparentes. La pantalla de predicciones combina una auditoría de modelo entrenado con datos sintéticos y un índice didáctico para registros de demostración; no ofrece predicciones reales de abandono. Consulta [Limitaciones y uso responsable](#limitaciones-y-uso-responsable).
 
-## 🎯 El Problema y Nuestra Solución
+**Demo publicada:** [camel-companion-club.lovable.app](https://camel-companion-club.lovable.app)
 
-Las escuelas generan diariamente miles de datos sobre asistencia, aprendizaje, formación docente, utilización de recursos y participación, pero en entornos vulnerables o con brechas de acceso carecen de herramientas sencillas para interpretarlos.
+## Qué permite hacer
 
-**EduPulse** transforma estos datos dispersos en alertas tempranas comprensibles y planes de intervención accionables para docentes, directores y responsables educativos, cumpliendo estrictamente con dos premisas éticas innegociables:
-1. **Cero decisiones automáticas sobre estudiantes (*Human-in-the-loop*):** El sistema sugiere, explica y prioriza, pero la decisión final recae siempre en el profesional educativo.
-2. **Privacidad y RGPD desde el diseño:** Seudonimización completa de identificadores estudiantiles (`ALU-XXXX`) en todas las capas de análisis y visualización.
+- **Acceso por centro y roles:** registro e inicio de sesión de docentes y dirección. Los centros existentes se comparten mediante invitaciones vinculadas a un email confirmado.
+- **Seguimiento de estudiantes:** alta individual o importación CSV con plantilla vacía o con 30 registros ficticios identificados como demostración. La importación valida filas, muestra vista previa y detecta códigos duplicados.
+- **Panel y alertas:** indicadores agregados por grupo y señales basadas en umbrales visibles para asistencia, nota y tareas. Las alertas no son predicciones de IA.
+- **Apoyo pedagógico:** creación y seguimiento de planes; el docente selecciona la acción y prioridad y confirma explícitamente su revisión.
+- **Vista de demostración analítica:** permite explorar el índice didáctico de los registros marcados como demo y consultar la importancia global del Random Forest entrenado con datos sintéticos.
+- **Contratación institucional:** paquetes por capacidad de centros, disponibilidad por entorno y flujo de pago Stripe. La disponibilidad no se inventa cuando el backend no está configurado.
+- **Idiomas:** interfaz en español, inglés y francés.
 
----
+## Demo de estudiantes y CSV
 
-## ✨ Características Principales
+En la aplicación, abre **Estudiantes → Importar CSV**:
 
-* **📊 Panel de Control Escolar (`/panel` y `/datos`):** Registro y monitorización de métricas académicas, asistencia, nivel de conectividad y adopción de recursos ProFuturo bajo identificadores seudonimizados.
-* **🔍 Alertas y Explicabilidad XAI (`/alertas` y `/predicciones`):** Motor basado en modelos interpretables (*Random Forest*) que desglosa el peso exacto de cada factor (ej. inasistencias consecutivas vs. brecha de conectividad domiciliaria), eliminando las "cajas negras".
-* **👩‍🏫 Planes de Intervención con Humano al Mando (`/planes`):** Flujo de validación donde el tutor aprueba, modifica o descarta las recomendaciones asistidas y realiza el seguimiento pedagógico.
-* **🛡️ Gobernanza y Ética (`/etica`):** Transparencia algorítmica, cumplimiento del RGPD (Reglamento UE 2016/679) y arquitectura preparada para entornos de conectividad intermitente.
-* **🤝 Sostenibilidad e Impacto B2G / B2NGO (`/contratacion`):** Modelo de transferencia al mercado mediante licencias institucionales (Ministerios, ONGs, Fundaciones y patrocinadores) con pasarela Stripe para garantizar que la escuela vulnerable reciba la herramienta de forma 100% gratuita.
+1. Descarga el CSV de demostración con 30 estudiantes ficticios o la plantilla vacía.
+2. Selecciona el archivo y revisa las filas válidas y los errores.
+3. Confirma la importación de las filas válidas.
 
----
+La importación admite hasta 500 registros y archivos CSV de hasta 2 MB. Las columnas obligatorias son código, curso, asistencia, entregas, uso de recursos y nota. Conectividad, situación académica y observaciones son opcionales. Se aceptan separadores por coma o punto y coma, y decimales con coma en CSV separado por punto y coma.
 
-## 🛠️ Arquitectura y Stack Tecnológico
+**No incluyas nombres, emails, contactos ni información sensible de menores.** Para datos reales, utiliza códigos seudonimizados y sigue las políticas de protección de datos de tu centro.
 
-### Frontend & Cloud
-* **Framework:** React 18 + TypeScript + Vite
-* **Estilos y UI:** Tailwind CSS + shadcn/ui (Radix UI) + Lucide Icons + Recharts
-* **Backend & Base de Datos:** Supabase / Lovable Cloud (PostgreSQL + Auth + Row Level Security)
-* **Pagos y Notificaciones:** Stripe Checkout (licencias institucionales) + Resend
+## Señales, modelo y explicabilidad
 
-### Machine Learning & Ciencia de Datos (`/model`)
-* **Librerías:** Python, `scikit-learn`, `pandas`, `numpy`, `joblib`
-* **Modelo:** Pipeline con `StandardScaler` y `RandomForestClassifier` optimizado mediante validación cruzada (`GridSearchCV`, `class_weight="balanced"`).
-* **Explicabilidad:** Extracción de importancia de características global y atribución local por estudiante para justificar cada alerta preventiva.
+### Señales operativas
 
-## 💳 Probar pagos Stripe en modo test
+Las rutas **Alertas** y el resumen del panel aplican reglas fijas y visibles (por ejemplo, asistencia inferior al 75 % como señal prioritaria). Muestran el indicador y el umbral que activaron cada señal; el profesional revisa el contexto y decide qué hacer.
 
-La contratación usa Stripe Checkout y guarda las reservas/licencias en Supabase. Para probarla localmente:
+### Demostración del modelo
 
-1. En Stripe, activa **Test mode** y copia la clave secreta que empieza por `sk_test_`.
-2. En Supabase, abre **Project Settings → API Keys** y copia la clave **Secret** del proyecto de pruebas (nunca la Publishable key para esta variable).
-3. Añade estas variables a `.env.local`, sin el prefijo `VITE_` para los secretos:
+El script [model/train_model.py](./model/train_model.py) genera datos sintéticos, entrena un pipeline de `StandardScaler` y `RandomForestClassifier`, evalúa métricas y exporta un informe. El reporte incluido en `artifacts/model_audit_report.json` refleja una evaluación sobre ese conjunto sintético; **no mide resultados de escuelas reales**.
 
-   ```env
-   SUPABASE_URL=https://TU-PROJECT-REF.supabase.co
-   SUPABASE_SERVICE_ROLE_KEY=TU-SUPABASE-SECRET-KEY
-   STRIPE_SECRET_KEY=sk_test_TU_CLAVE
-   STRIPE_ALLOWED_ORIGINS=http://localhost:8080
-   ```
+En **Predicciones**, el índice 0–100 de cada registro de demostración se calcula con una fórmula pedagógica explícita sobre sus métricas (asistencia 30 %, nota 25 %, entregas 20 %, uso de recursos 15 % y conectividad 10 %). Es un **índice didáctico, no una probabilidad ni pronóstico de abandono** y no lo calcula el Random Forest. La importancia global del Random Forest se presenta por separado y no como explicación individual ni como valores SHAP.
 
-   Conserva también las variables `VITE_SUPABASE_URL` y `VITE_SUPABASE_PUBLISHABLE_KEY` ya configuradas. No publiques ni compartas `.env.local`; las claves `SUPABASE_SERVICE_ROLE_KEY` y `STRIPE_SECRET_KEY` solo se usan en el servidor.
-4. En Stripe, habilita **Automatic Tax** para usar el checkout fiscal configurado por la app. Inicia el servidor con `npm run dev` y completa un pago con la tarjeta de pruebas `4242 4242 4242 4242`, una fecha futura y cualquier CVC.
+El servicio de inferencia real no está conectado. Los registros reales no reciben puntuaciones de demostración.
 
-El servidor detecta el modo de pruebas a partir de `sk_test_`; las licencias solo se activan después de verificar el pago completado con Stripe. No hace falta configurar un webhook para esta prueba local.
+## Tecnologías
 
----
+- **Aplicación:** React 19, TypeScript, TanStack Start/Router, Vite 8, Tailwind CSS 4 y componentes Radix/shadcn.
+- **Datos y autenticación:** Supabase (PostgreSQL, Auth y Row Level Security).
+- **Gráficos:** Recharts. **Pagos institucionales:** Stripe Checkout. **Confirmaciones de compra:** Resend.
+- **Modelo experimental:** Python, NumPy, pandas, scikit-learn y joblib.
 
-## 🚀 Estructura del Repositorio e Instalación
+## Ejecución local
+
+Requisitos: Node.js compatible con el proyecto y npm. Para conectar la app a Supabase, configura `.env.local`:
+
+```env
+VITE_SUPABASE_URL=https://TU-PROJECT-REF.supabase.co
+VITE_SUPABASE_PUBLISHABLE_KEY=TU_CLAVE_PUBLICA
+```
+
+Inicia la aplicación:
+
+```bash
+npm install
+npm run dev
+```
+
+Ejecuta comprobaciones:
+
+```bash
+npm test
+npm run lint
+npm run build
+```
+
+La configuración de [supabase/config.toml](./supabase/config.toml) desactiva la confirmación por email **solo para Supabase local**. Para usarla, inicia tu instancia local de Supabase y apunta las variables de la app a esa instancia. Este ajuste no cambia el proyecto alojado. En producción es recomendable conservar la confirmación: las invitaciones para unirse a un centro dependen de verificar el email.
+
+## Entrenamiento experimental
+
+Desde la raíz del repositorio:
+
+```bash
+python -m venv .venv
+# Windows:
+.venv\Scripts\activate
+# macOS/Linux:
+# source .venv/bin/activate
+pip install -r model/requirements.txt
+python model/train_model.py
+```
+
+El script escribe resultados en `artifacts/` respecto del directorio actual. El CSV y el modelo serializado son artefactos de experimentación con datos sintéticos; el frontend no carga el archivo `.joblib` ni consulta un endpoint de inferencia.
+
+## Contratación institucional
+
+La ruta **Licencias institucionales** consulta disponibilidad real y permite solicitar los paquetes configurados. Para habilitar Stripe localmente se requieren servicios y secretos de servidor:
+
+```env
+SUPABASE_URL=https://TU-PROJECT-REF.supabase.co
+SUPABASE_SERVICE_ROLE_KEY=TU_CLAVE_SECRETA_DE_SERVIDOR
+STRIPE_SECRET_KEY=sk_test_TU_CLAVE_DE_PRUEBAS
+STRIPE_ALLOWED_ORIGINS=http://localhost:8080
+```
+
+Configura Automatic Tax en Stripe. No expongas `SUPABASE_SERVICE_ROLE_KEY` ni `STRIPE_SECRET_KEY` en variables `VITE_*`, en el navegador o en el repositorio. La aplicación verifica la sesión de Stripe antes de activar la licencia; el entorno test y el real mantienen inventarios separados.
+
+Las confirmaciones de compra por email requieren configuración de Resend y sender verificado en producción. La opción de prueba restringida requiere además un destinatario de prueba configurado en servidor; no equivale a desactivar ni afecta a los emails de autenticación de Supabase.
+
+## Privacidad, roles y límites
+
+- Los datos educativos están protegidos por políticas de acceso por centro. La dirección consulta resultados agregados; las observaciones y notas individuales son para el rol autorizado de docente.
+- Las invitaciones para centros existentes requieren email confirmado. Desactivar esa comprobación en producción debilitaría la verificación de identidad del invitado.
+- La seudonimización reduce exposición, pero no convierte por sí sola los datos en anónimos ni acredita cumplimiento legal. No uses datos identificables de estudiantes en la demo.
+- No se toman decisiones automatizadas sobre estudiantes. Las alertas son señales de apoyo y cualquier plan requiere revisión explícita del docente.
+- La app necesita conexión con Supabase para las áreas autenticadas; no implementa sincronización educativa offline.
+
+## Estructura principal
 
 ```text
-├── src/                  # Código fuente del Frontend (React + TypeScript)
-├── supabase/             # Esquemas, funciones Edge y configuración de base de datos
-├── model/                # Motor de Machine Learning y Explicabilidad (XAI)
-│   ├── train_model.py    # Script de generación de datos sintéticos, entrenamiento y auditoría
-│   ├── requirements.txt  # Dependencias de Python (scikit-learn, pandas, joblib)
-│   └── artifacts/        # Modelo serializado (.joblib), dataset (.csv) y reporte (.json)
-└── README.md
+src/
+  components/edu/       Componentes educativos, importación CSV y demo
+  lib/edu/              Reglas, esquemas, almacenamiento y demo analítica
+  lib/licensing/        Reglas, pagos y confirmaciones institucionales
+  routes/               Rutas públicas, autenticadas y de contratación
+  i18n/locales/         Traducciones es, en y fr
+supabase/               Configuración local de Supabase
+drizzle/migrations/     Migraciones SQL de esquema, permisos y funciones
+model/                  Script de entrenamiento y dependencias Python
+artifacts/              Informe y artefactos de modelo sintético
+```
