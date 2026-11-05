@@ -1,32 +1,36 @@
 import { useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
-import { useSuspenseQuery } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
-import { ArrowRight, Check, RefreshCw, School, Network, Globe } from "lucide-react";
+import { ArrowRight, Check, School, Network, Globe } from "lucide-react";
 import camelWave from "@/assets/camel-wave.png";
-import { licensingOptions } from "@/lib/licensing/queries";
 import { eduPageHead } from "@/lib/edu/meta";
 import { PageTitle } from "@/components/edu/ui";
 import { Button } from "@/components/ui/button";
 import { ContractForm } from "@/components/licensing/ContractForm";
-import type { PackageId } from "@/lib/licensing/rules";
+import {
+  PACKAGE_IDS,
+  PACKAGE_RULES,
+  type PackageAvailability,
+  type PackageId,
+} from "@/lib/licensing/rules";
 
 export const Route = createFileRoute("/contratacion/")({
   head: () => eduPageHead("licensing"),
-  loader: ({ context }) => context.queryClient.ensureQueryData(licensingOptions),
   component: InstitutionalLicensing,
 });
 
 const ICONS = { pilot: School, district: Network, regional: Globe };
+const DEMO_PACKAGES: PackageAvailability[] = PACKAGE_IDS.map((id) => ({
+  id,
+  ...PACKAGE_RULES[id],
+  available: PACKAGE_RULES[id].capacity,
+}));
 
 function InstitutionalLicensing() {
   const { t, i18n } = useTranslation();
-  const { data, refetch, isFetching } = useSuspenseQuery(licensingOptions);
   const [selected, setSelected] = useState<PackageId | null>(null);
 
-  const packagesWithStock = data.packages;
-
-  const item = packagesWithStock.find((p) => p.id === selected);
+  const item = DEMO_PACKAGES.find((p) => p.id === selected);
 
   return (
     <div>
@@ -42,26 +46,18 @@ function InstitutionalLicensing() {
       </div>
 
       <p className="mb-6 rounded-md border-l-4 border-primary bg-muted p-4 text-sm font-medium">
-        {t("licensing.contributionNote")}
+        {t("licensing.demoNotice")}
       </p>
 
-      <div className="mb-6 flex flex-wrap items-center justify-between gap-3 border-y-2 py-4">
-        <p className="font-bold text-secondary">
-          {!data.ready || !data.environment
-            ? t("licensing.notReady")
-            : t(data.environment === "sandbox" ? "licensing.test" : "licensing.live")}
-        </p>
-        <Button variant="ghost" onClick={() => void refetch()} disabled={isFetching}>
-          <RefreshCw className={isFetching ? "animate-spin motion-reduce:animate-none" : ""} />
-          {t("licensing.refresh")}
-        </Button>
+      <div className="mb-6 border-y-2 py-4">
+        <p className="font-bold text-secondary">{t("licensing.demoMode")}</p>
       </div>
 
       {item ? (
         <ContractForm key={item.id} item={item} onBack={() => setSelected(null)} />
       ) : (
         <div className="grid items-stretch gap-6 lg:grid-cols-3">
-          {packagesWithStock.map((p) => {
+          {DEMO_PACKAGES.map((p) => {
             const Icon = ICONS[p.id as keyof typeof ICONS] ?? School;
 
             return (
@@ -95,31 +91,25 @@ function InstitutionalLicensing() {
                   ))}
                 </ul>
                 <p className="mb-4 mt-8 text-sm font-extrabold text-secondary">
-                  {t("licensing.available", { count: p.available })}
+                  {t("licensing.demoAvailable", { count: p.available })}
                 </p>
                 <div className="mb-5">
                   <div className="mb-2 flex justify-between text-xs font-bold text-muted-foreground">
-                    <span>
-                      {t("licensing.capacityUse", {
-                        used: p.capacity - p.available,
-                        capacity: p.capacity,
-                      })}
-                    </span>
-                    <span>{Math.round(((p.capacity - p.available) / p.capacity) * 100)}%</span>
+                    <span>{t("licensing.capacityUse", { used: 0, capacity: p.capacity })}</span>
+                    <span>0%</span>
                   </div>
                   <progress
                     className="block h-2.5 w-full overflow-hidden rounded-full accent-primary"
-                    value={p.capacity - p.available}
+                    value={0}
                     max={p.capacity}
                     aria-label={t("licensing.capacityUse", {
-                      used: p.capacity - p.available,
+                      used: 0,
                       capacity: p.capacity,
                     })}
                   />
                 </div>
                 <Button
                   className="h-auto min-h-11 whitespace-normal py-3"
-                  disabled={!data.ready || p.available <= 0}
                   onClick={() => setSelected(p.id)}
                 >
                   {t("licensing.contract")}
