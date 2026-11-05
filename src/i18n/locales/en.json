@@ -247,7 +247,7 @@
     "signOut": "Sign out",
     "forgot": "Forgot your password?",
     "sendReset": "Send recovery link",
-    "confirmEmail": "Check your email and confirm your account before signing in.",
+    "confirmationStillEnabled": "The account was created, but this Supabase instance still requires email confirmation. The no-email setting is configured for the local environment only.",
     "resetSent": "If an account exists with this email, you will receive a recovery link.",
     "invalid": "Check your email, name and password.",
     "loginError": "Sign-in failed. Check your details and confirm your email.",

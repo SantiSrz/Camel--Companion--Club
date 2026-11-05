@@ -247,7 +247,7 @@
     "signOut": "Cerrar sesión",
     "forgot": "¿Olvidaste tu contraseña?",
     "sendReset": "Enviar enlace de recuperación",
-    "confirmEmail": "Revisa tu email y confirma tu cuenta antes de iniciar sesión.",
+    "confirmationStillEnabled": "La cuenta se creó, pero esta instancia de Supabase todavía exige confirmar el email. La opción sin correo está configurada solo para el entorno local.",
     "resetSent": "Si existe una cuenta con ese email, recibirás un enlace de recuperación.",
     "invalid": "Revisa el email, el nombre y la contraseña.",
     "loginError": "No se pudo iniciar sesión. Revisa tus datos y confirma tu email.",

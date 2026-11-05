@@ -247,7 +247,7 @@
     "signOut": "Se déconnecter",
     "forgot": "Mot de passe oublié ?",
     "sendReset": "Envoyer le lien de récupération",
-    "confirmEmail": "Consultez votre email et confirmez votre compte avant de vous connecter.",
+    "confirmationStillEnabled": "Le compte a été créé, mais cette instance Supabase exige toujours la confirmation par email. Le réglage sans email est configuré uniquement pour l’environnement local.",
     "resetSent": "Si un compte existe avec cet email, vous recevrez un lien de récupération.",
     "invalid": "Vérifiez votre email, votre nom et votre mot de passe.",
     "loginError": "Connexion impossible. Vérifiez vos informations et confirmez votre email.",

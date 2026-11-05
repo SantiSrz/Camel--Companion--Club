@@ -51,7 +51,7 @@ function Auth() {
     setBusy(true);
     try {
       if (mode === "signup") {
-        const { error: err } = await supabase.auth.signUp({
+        const { data, error: err } = await supabase.auth.signUp({
           email: email.trim(),
           password,
           options: {
@@ -60,7 +60,11 @@ function Auth() {
           },
         });
         if (err) throw err;
-        setMessage("auth.confirmEmail");
+        if (data.session) {
+          await navigate({ href: destination, replace: true });
+        } else {
+          setMessage("auth.confirmationStillEnabled");
+        }
       } else if (mode === "forgot") {
         const { error: err } = await supabase.auth.resetPasswordForEmail(email.trim(), {
           redirectTo: `${window.location.origin}/reset-password`,
