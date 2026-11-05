@@ -4,7 +4,7 @@ Plataforma de seguimiento educativo para ayudar a docentes y centros a revisar i
 
 > **Estado del producto:** MVP de hackathon. Las señales actuales son reglas transparentes. La pantalla de predicciones combina una auditoría de modelo entrenado con datos sintéticos y un índice didáctico para registros de demostración; no ofrece predicciones reales de abandono. Consulta [Limitaciones y uso responsable](#limitaciones-y-uso-responsable).
 
-**Demo publicada:** [camel-companion-club.lovable.app](https://camel-companion-club.lovable.app)
+**Demo publicada:** [camel-companion-club.lovable.app](https://camel-companion-club.vercel.app)
 
 ## Qué permite hacer
 
