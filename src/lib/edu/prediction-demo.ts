@@ -1,18 +1,20 @@
-/** Illustrative hackathon fixtures only. No inference, training or SHAP is performed. */
+/** The audit metrics come from the checked-in synthetic-data training report; student risks remain demo fixtures. */
 export const DEMO_MODEL = {
   mode: "simulation",
   name: "Random Forest",
   version: "1.0",
-  precision: 89.4,
-  recall: 91.2,
-  f1: 0.9,
+  accuracy: 80.83,
+  weightedRecall: 80.83,
+  weightedF1: 0.81,
   horizonMonths: 3,
   confidence: 92,
   factors: [
-    { key: "absences", weight: 42 },
-    { key: "submissions", weight: 28 },
-    { key: "resources", weight: 18 },
-    { key: "connectivity", weight: 12 },
+    { key: "grades", weight: 31.13 },
+    { key: "consecutiveAbsences", weight: 20.16 },
+    { key: "resources", weight: 17.9 },
+    { key: "attendance", weight: 17.11 },
+    { key: "connectivity", weight: 7.35 },
+    { key: "teacherTraining", weight: 6.34 },
   ],
 } as const;
 

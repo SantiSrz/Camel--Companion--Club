@@ -23,7 +23,14 @@ function Alertas() {
   const { t, i18n } = useTranslation();
   const nf = new Intl.NumberFormat(i18n.language, { maximumFractionDigits: 1 });
   const { dataset, students, account } = useDataset();
-  const all = buildAlerts(dataset.rows);
+  const all = buildAlerts(dataset.rows).sort(
+    (a, b) =>
+      (a.level === "rojo" ? 0 : 1) - (b.level === "rojo" ? 0 : 1) ||
+      b.factors.length - a.factors.length ||
+      a.estudiante_id.localeCompare(b.estudiante_id),
+  );
+  const priorityCount = all.filter((alert) => alert.level === "rojo").length;
+  const attentionCount = all.length - priorityCount;
   const grupos = [...new Set(all.map((a) => a.grupo))].sort();
   const [level, setLevel] = useState("todos");
   const [grupo, setGrupo] = useState("todos");
@@ -50,6 +57,16 @@ function Alertas() {
           tr: THRESHOLDS.tareas_entregadas.rojo,
           ty: THRESHOLDS.tareas_entregadas.amarillo,
         })}
+      </div>
+      <div className="mb-6 grid gap-3 sm:grid-cols-2" aria-label={t("alertas.summary")}>
+        <div className="rounded-xl border-l-4 border-destructive bg-destructive/5 p-4">
+          <p className="text-sm font-bold text-muted-foreground">{t("alertas.priorityCount")}</p>
+          <p className="mt-1 text-3xl font-black tabular-nums text-destructive">{priorityCount}</p>
+        </div>
+        <div className="rounded-xl border-l-4 border-warning bg-accent/60 p-4">
+          <p className="text-sm font-bold text-muted-foreground">{t("alertas.attentionCount")}</p>
+          <p className="mt-1 text-3xl font-black tabular-nums text-secondary">{attentionCount}</p>
+        </div>
       </div>
       <div className="mb-6 flex flex-wrap gap-3">
         <div className="w-48">

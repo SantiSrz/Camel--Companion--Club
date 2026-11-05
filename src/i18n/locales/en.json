@@ -83,21 +83,15 @@
     "colStatus": "Status",
     "gradeByGroup": "Average grade by group",
     "monthlyEvolution": "Monthly evolution",
-    "months": [
-      "Sep",
-      "Oct",
-      "Nov",
-      "Dec",
-      "Jan",
-      "Feb"
-    ]
+    "months": ["Sep", "Oct", "Nov", "Dec", "Jan", "Feb"]
   },
   "datos": {
     "title": "Data upload",
     "activeData": "Active data: {{name}} ({{count}} rows)",
     "selectFile": "Select a CSV file",
     "columns": "Columns: {{columns}}",
-    "downloadTemplate": "Download template",
+    "downloadDemoCsv": "Download 30-student demo",
+    "downloadEmptyTemplate": "Download blank template",
     "backToDemo": "Back to demo data",
     "validationOf": "Validation of {{file}}",
     "missingColumns": "Missing columns: {{columns}}",
@@ -126,6 +120,9 @@
       "tareas_entregadas": "Submissions"
     },
     "factor": "{{metric}} {{value}}{{unit}} < {{threshold}}{{unit}}",
+    "summary": "Active alert summary",
+    "priorityCount": "Priority · review needed",
+    "attentionCount": "Attention · follow-up",
     "count_one": "{{count}} alert",
     "count_other": "{{count}} alerts"
   },
@@ -145,14 +142,14 @@
   "predictionDemo": {
     "subtitle": "Predictive Model v1.0 · Explainable hackathon demonstration",
     "modelHeader": "Demonstration model specifications",
-    "modelBadge": "Active demo model: Random Forest v1.0 (XAI - SHAP Weights)",
-    "method": "Random Forest / Explainable Decision Tree · Simulation",
+    "modelBadge": "Model audit: Random Forest v1.0 · Synthetic data",
+    "method": "Offline evaluation of a Random Forest model",
     "simulationBadge": "DEMO · SIMULATED RESULTS",
-    "precision": "Precision · example",
-    "recall": "Recall · example",
-    "f1": "F1-Score · example",
-    "training": "Conceptual reference dataset: historical pseudonymous cohorts. No real model has been trained or evaluated.",
-    "disclaimer": "Hackathon demonstration: probabilities, confidence, metrics and weights are illustrative, not real predictions or calculated SHAP values.",
+    "accuracy": "Accuracy · synthetic evaluation",
+    "weightedRecall": "Weighted recall · synthetic evaluation",
+    "weightedF1": "Weighted F1 · synthetic evaluation",
+    "training": "Metrics and global importance come from the audit report for a model trained on synthetic data; they do not represent results from real schools.",
+    "disclaimer": "Student risk and confidence are fixed demo scenarios; the model does not calculate them. Metrics come from synthetic evaluation, and factors show global importance—not SHAP or a student-level explanation.",
     "student": "Pseudonymous student",
     "horizon": "Illustrative horizon: {{months}} months",
     "results": "Simulation results",
@@ -163,15 +160,17 @@
     "simulatedValue": "Simulated value · Not a forecast",
     "confidence": "Illustrative confidence: {{value}}",
     "confidenceNote": "Confidence is an uncalibrated example; it does not express certainty about this student.",
-    "factorsTitle": "Determining factors",
-    "factorsSubtitle": "SHAP explainability / Feature Importance · Visual example",
+    "factorsTitle": "Global feature importance",
+    "factorsSubtitle": "Which variables mattered most to the model in its synthetic evaluation",
     "factors": {
-      "absences": "Recent absence rate",
-      "submissions": "Declining submission trend",
-      "resources": "Disconnection from ProFuturo resources",
-      "connectivity": "Home connectivity gap"
+      "grades": "Academic performance",
+      "consecutiveAbsences": "Consecutive absences",
+      "resources": "Use of ProFuturo resources",
+      "attendance": "Attendance",
+      "connectivity": "Connectivity gap",
+      "teacherTraining": "Teacher training"
     },
-    "weightsNote": "Illustrative relative weights (total: 100%). Not probability points, causal effects or calculated SHAP contributions; the same factor example is kept when switching students.",
+    "weightsNote": "Approximate global relative importance (total: 100%). It does not describe the selected student's risk, prove causality or equal SHAP contributions.",
     "noExample": "This record has no demonstration scenario. Simulated probabilities are not generated for real students.",
     "humanReview": "The teacher decides on support after reviewing actual metrics and context.",
     "toPlan": "Transfer to Teacher Intervention Plan",
@@ -294,7 +293,13 @@
     "grade": "Average grade (0–10)",
     "observations": "Pedagogical observations",
     "connectivity": "Connectivity",
-    "connectivityOptions": { "unknown": "Not recorded", "low_none": "Low / none", "intermittent": "Intermittent", "medium": "Medium", "good": "Good" },
+    "connectivityOptions": {
+      "unknown": "Not recorded",
+      "low_none": "Low / none",
+      "intermittent": "Intermittent",
+      "medium": "Medium",
+      "good": "Good"
+    },
     "risk": "Risk signal",
     "enrollment": "Enrollment status",
     "status": {
@@ -314,7 +319,42 @@
     "deleteConfirm": "Delete this student and all their plans and history?",
     "manage": "Manage",
     "noMatches": "No matches",
-    "noMatchesText": "No students match this search."
+    "noMatchesText": "No students match this search.",
+    "importCsv": "Import CSV",
+    "downloadTemplate": "Download template",
+    "chooseCsv": "Choose CSV file",
+    "importHelp": "Download the 30-student synthetic demo CSV or a blank template for your own data. You can upload up to 500 records; review the preview before saving. For real data, use pseudonymous codes only—never names or sensitive data.",
+    "importDemoNotice": "{{count}} records are marked as demonstration data, not real students.",
+    "importCsvOnly": "Choose a file in CSV format.",
+    "importFileTooLarge": "The file exceeds the 2 MB limit.",
+    "importReadError": "The file could not be read. Check that it is a valid CSV.",
+    "importLimit": "The limit is {{count}} students per import.",
+    "importMissingColumns": "Required columns are missing: {{columns}}.",
+    "importPreview": "{{count}} valid students ready to import.",
+    "importNoRows": "There are no valid rows to import.",
+    "importMoreValid": "And {{count}} more valid students.",
+    "importSkipped": "{{count}} rows will not be imported:",
+    "importLineError": "Row {{line}}: {{message}}",
+    "importDuplicateExisting": "Code {{code}} already exists in this school.",
+    "importDuplicateFile": "Code {{code}} is repeated in the file.",
+    "importInvalidFields": "Check these fields: {{fields}}.",
+    "importMoreErrors": "And {{count}} more errors.",
+    "importConfirm": "Import {{count}} valid students",
+    "importing": "Importing…",
+    "importSuccess": "{{count}} students imported.",
+    "importDuplicateRace": "One of these codes was just added in another session. Refresh the list and review the file again.",
+    "importFailed": "The import could not be completed. This batch was not saved; please try again.",
+    "importFields": {
+      "code": "code",
+      "course": "course",
+      "attendance": "attendance",
+      "submissions": "submissions",
+      "resource_usage": "resource use",
+      "grade": "grade",
+      "connectivity": "connectivity",
+      "enrollment_status": "enrollment status",
+      "observations": "observations"
+    }
   },
   "plansCloud": {
     "new": "Assisted support plan",
@@ -353,6 +393,11 @@
     "completedPlans": "Completed",
     "refresh": "Refresh",
     "retentionDefinition": "Observed retention: active or completed students / total registered. Not a prediction.",
+    "alertSummaryTitle": "Recommended follow-up",
+    "alertSummaryText": "Transparent rule-based signals; review context before deciding on support.",
+    "priorityAlerts": "Priority: {{count}}",
+    "attentionAlerts": "Attention: {{count}}",
+    "openAlerts": "Review alerts",
     "empty": "Your school has no records yet",
     "emptyDirector": "Invite teachers to start tracking educational outcomes.",
     "groups": "Indicators by course",
@@ -425,6 +470,7 @@
     "coverage_one": "Up to {{count}} school",
     "coverage_other": "Up to {{count}} schools",
     "available": "{{count}} school places available",
+    "capacityUse": "{{used}} of {{capacity}} places allocated",
     "soldOut": "Places sold out",
     "contract": "Purchase",
     "select": "Selected package",
@@ -475,11 +521,7 @@
       "pilot": {
         "name": "Rural School Pilot Package",
         "description": "Deployment in one school.",
-        "features": [
-          "Technical support",
-          "Offline synchronisation",
-          "Initial teacher workshop"
-        ]
+        "features": ["Technical support", "Offline synchronisation", "Initial teacher workshop"]
       },
       "district": {
         "name": "Educational District Programme",
@@ -493,11 +535,7 @@
       "regional": {
         "name": "Regional Alliance / ProFuturo Network",
         "description": "Scaled deployment across an education network.",
-        "features": [
-          "Custom data integration",
-          "Impact audit",
-          "Priority support"
-        ]
+        "features": ["Custom data integration", "Impact audit", "Priority support"]
       }
     }
   }

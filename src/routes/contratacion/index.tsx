@@ -97,6 +97,26 @@ function InstitutionalLicensing() {
                 <p className="mb-4 mt-8 text-sm font-extrabold text-secondary">
                   {t("licensing.available", { count: p.available })}
                 </p>
+                <div className="mb-5">
+                  <div className="mb-2 flex justify-between text-xs font-bold text-muted-foreground">
+                    <span>
+                      {t("licensing.capacityUse", {
+                        used: p.capacity - p.available,
+                        capacity: p.capacity,
+                      })}
+                    </span>
+                    <span>{Math.round(((p.capacity - p.available) / p.capacity) * 100)}%</span>
+                  </div>
+                  <progress
+                    className="block h-2.5 w-full overflow-hidden rounded-full accent-primary"
+                    value={p.capacity - p.available}
+                    max={p.capacity}
+                    aria-label={t("licensing.capacityUse", {
+                      used: p.capacity - p.available,
+                      capacity: p.capacity,
+                    })}
+                  />
+                </div>
                 <Button
                   className="h-auto min-h-11 whitespace-normal py-3"
                   disabled={!data.ready || p.available <= 0}

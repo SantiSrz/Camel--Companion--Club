@@ -16,7 +16,7 @@ import { RefreshCw, ArrowUpRight } from "lucide-react";
 import { PageTitle, EmptyState, LevelBadge } from "@/components/edu/ui";
 import { dashboardOptions, useDataset, loadEducation } from "@/lib/edu/store";
 import { eduPageHead } from "@/lib/edu/meta";
-import { evaluateStudent } from "@/lib/edu/alerts";
+import { buildAlerts, evaluateStudent } from "@/lib/edu/alerts";
 import { SchoolInvites } from "@/components/edu/SchoolInvites";
 import { CloudError, CloudPending } from "@/components/edu/CloudFeedback";
 import { Button } from "@/components/ui/button";
@@ -33,6 +33,9 @@ function Panel() {
   const { dataset, students, account } = useDataset();
   const { data: d, refetch, isFetching } = useSuspenseQuery(dashboardOptions);
   const director = account.membership?.role === "director";
+  const alertSummary = director ? [] : buildAlerts(dataset.rows);
+  const priorityAlerts = alertSummary.filter((alert) => alert.level === "rojo").length;
+  const attentionAlerts = alertSummary.filter((alert) => alert.level === "amarillo").length;
   const nf = new Intl.NumberFormat(i18n.language, { maximumFractionDigits: 1 });
   const fmt = (v: number | null, suffix = "") => (v === null ? "–" : `${nf.format(v)}${suffix}`);
   const kpis = [
@@ -63,7 +66,9 @@ function Panel() {
           </Button>
         </div>
       </PageTitle>
-      {students.some((s) => s.is_sample) && <p className="mb-4 text-sm font-bold text-secondary">{t("common.demoData")}</p>}
+      {students.some((s) => s.is_sample) && (
+        <p className="mb-4 text-sm font-bold text-secondary">{t("common.demoData")}</p>
+      )}
       <div className="grid gap-4 sm:grid-cols-3 lg:grid-cols-6">
         {kpis.map(([key, value, suffix]) => (
           <article key={key} className="rounded-lg border-2 p-4">
@@ -73,6 +78,27 @@ function Panel() {
         ))}
       </div>
       <p className="mt-3 text-xs text-muted-foreground">{t("dashboard.retentionDefinition")}</p>
+      {!director && d.total > 0 && (
+        <section className="mt-6 flex flex-wrap items-center justify-between gap-5 rounded-2xl border-2 border-primary/30 bg-accent/50 p-5">
+          <div>
+            <h2 className="text-lg">{t("dashboard.alertSummaryTitle")}</h2>
+            <p className="mt-1 text-sm text-muted-foreground">{t("dashboard.alertSummaryText")}</p>
+            <div className="mt-3 flex flex-wrap gap-x-5 gap-y-2 text-sm font-bold">
+              <span className="text-destructive">
+                {t("dashboard.priorityAlerts", { count: priorityAlerts })}
+              </span>
+              <span className="text-secondary">
+                {t("dashboard.attentionAlerts", { count: attentionAlerts })}
+              </span>
+            </div>
+          </div>
+          <Button asChild variant="outline">
+            <Link to="/alertas">
+              {t("dashboard.openAlerts")} <ArrowUpRight className="ml-2 size-4" />
+            </Link>
+          </Button>
+        </section>
+      )}
       {d.total === 0 ? (
         <div className="mt-8">
           <EmptyState

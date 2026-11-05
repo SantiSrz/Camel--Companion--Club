@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Plus, ArrowUpRight } from "lucide-react";
+import { Plus, ArrowUpRight, FileSpreadsheet } from "lucide-react";
 import { useDataset, loadEducation } from "@/lib/edu/store";
 import { eduPageHead } from "@/lib/edu/meta";
 import { StudentEditor } from "@/components/edu/StudentEditor";
@@ -13,6 +13,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { LevelBadge } from "@/components/edu/ui";
 import { evaluateStudent } from "@/lib/edu/alerts";
 import { asStudentRecord } from "@/lib/edu/store";
+import { StudentCsvImport } from "@/components/edu/StudentCsvImport";
 
 export const Route = createFileRoute("/_authenticated/datos")({
   head: () => eduPageHead("students"),
@@ -27,6 +28,7 @@ function Students() {
   const nf = new Intl.NumberFormat(i18n.language, { maximumFractionDigits: 1 });
   const { students, account } = useDataset();
   const [open, setOpen] = useState(false);
+  const [importOpen, setImportOpen] = useState(false);
   const [search, setSearch] = useState("");
   if (account.membership?.role === "director")
     return (
@@ -42,10 +44,16 @@ function Students() {
   return (
     <div>
       <PageTitle title={t("students.title")} subtitle={account.school?.name ?? ""}>
-        <Button onClick={() => setOpen(true)}>
-          <Plus />
-          {t("students.new")}
-        </Button>
+        <div className="flex flex-wrap gap-2">
+          <Button variant="outline" onClick={() => setImportOpen(true)}>
+            <FileSpreadsheet />
+            {t("students.importCsv")}
+          </Button>
+          <Button onClick={() => setOpen(true)}>
+            <Plus />
+            {t("students.new")}
+          </Button>
+        </div>
       </PageTitle>
       <Input
         className="mb-6 max-w-sm"
@@ -56,10 +64,16 @@ function Students() {
       />
       {students.length === 0 ? (
         <EmptyState title={t("students.empty")} text={t("students.emptyText")}>
-          <Button onClick={() => setOpen(true)}>
-            <Plus />
-            {t("students.new")}
-          </Button>
+          <div className="flex flex-wrap justify-center gap-2">
+            <Button variant="outline" onClick={() => setImportOpen(true)}>
+              <FileSpreadsheet />
+              {t("students.importCsv")}
+            </Button>
+            <Button onClick={() => setOpen(true)}>
+              <Plus />
+              {t("students.new")}
+            </Button>
+          </div>
         </EmptyState>
       ) : visible.length === 0 ? (
         <EmptyState title={t("students.noMatches")} text={t("students.noMatchesText")} />
@@ -99,7 +113,11 @@ function Students() {
                     >
                       {s.code}
                     </Link>
-                    {s.is_sample && <p className="mt-1 text-xs font-bold text-muted-foreground">{t("common.demoData")}</p>}
+                    {s.is_sample && (
+                      <p className="mt-1 text-xs font-bold text-muted-foreground">
+                        {t("common.demoData")}
+                      </p>
+                    )}
                   </td>
                   <td className="pr-4">{s.course}</td>
                   <td>{nf.format(s.attendance)}%</td>
@@ -107,7 +125,9 @@ function Students() {
                   <td>{nf.format(s.resource_usage)}%</td>
                   <td>{nf.format(s.grade)}</td>
                   <td>{t(`students.connectivityOptions.${s.connectivity}`)}</td>
-                  <td className="px-3"><LevelBadge level={evaluateStudent(asStudentRecord(s)).level} /></td>
+                  <td className="px-3">
+                    <LevelBadge level={evaluateStudent(asStudentRecord(s)).level} />
+                  </td>
                   <td>{t(`students.status.${s.enrollment_status}`)}</td>
                   <td>
                     <Button variant="ghost" size="icon" asChild>
@@ -140,6 +160,21 @@ function Students() {
               schoolId={account.school.id}
               teacherId={account.user.id}
               onSaved={() => setOpen(false)}
+            />
+          )}
+        </DialogContent>
+      </Dialog>
+      <Dialog open={importOpen} onOpenChange={setImportOpen}>
+        <DialogContent className="max-h-[90dvh] overflow-y-auto sm:max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>{t("students.importCsv")}</DialogTitle>
+          </DialogHeader>
+          {account.school && (
+            <StudentCsvImport
+              schoolId={account.school.id}
+              teacherId={account.user.id}
+              students={students}
+              onImported={() => setImportOpen(false)}
             />
           )}
         </DialogContent>

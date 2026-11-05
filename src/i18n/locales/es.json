@@ -83,21 +83,15 @@
     "colStatus": "Estado",
     "gradeByGroup": "Nota media por grupo",
     "monthlyEvolution": "Evolución mensual",
-    "months": [
-      "Sep",
-      "Oct",
-      "Nov",
-      "Dic",
-      "Ene",
-      "Feb"
-    ]
+    "months": ["Sep", "Oct", "Nov", "Dic", "Ene", "Feb"]
   },
   "datos": {
     "title": "Carga de datos",
     "activeData": "Datos activos: {{name}} ({{count}} filas)",
     "selectFile": "Selecciona un archivo CSV",
     "columns": "Columnas: {{columns}}",
-    "downloadTemplate": "Descargar plantilla",
+    "downloadDemoCsv": "Descargar demo con 30 estudiantes",
+    "downloadEmptyTemplate": "Descargar plantilla vacía",
     "backToDemo": "Volver a datos demo",
     "validationOf": "Validación de {{file}}",
     "missingColumns": "Faltan columnas: {{columns}}",
@@ -126,6 +120,9 @@
       "tareas_entregadas": "Entregas"
     },
     "factor": "{{metric}} {{value}}{{unit}} < {{threshold}}{{unit}}",
+    "summary": "Resumen de alertas activas",
+    "priorityCount": "Prioritarias · requieren revisión",
+    "attentionCount": "En atención · seguimiento",
     "count_one": "{{count}} alerta",
     "count_other": "{{count}} alertas"
   },
@@ -145,14 +142,14 @@
   "predictionDemo": {
     "subtitle": "Modelo Predictivo v1.0 · Demostración explicable para el hackathon",
     "modelHeader": "Ficha técnica del modelo de demostración",
-    "modelBadge": "Modelo activo en demo: Random Forest v1.0 (XAI - SHAP Weights)",
-    "method": "Random Forest / Árbol de Decisión Explicable · Simulación",
+    "modelBadge": "Auditoría del modelo: Random Forest v1.0 · Datos sintéticos",
+    "method": "Evaluación offline de un modelo Random Forest",
     "simulationBadge": "DEMO · RESULTADOS SIMULADOS",
-    "precision": "Precisión · ejemplo",
-    "recall": "Recall · ejemplo",
-    "f1": "F1-Score · ejemplo",
-    "training": "Dataset de referencia conceptual: cohortes históricas seudonimizadas. No se ha entrenado ni evaluado un modelo real.",
-    "disclaimer": "Demostración del hackathon: probabilidades, confianza, métricas y pesos son ilustrativos, no predicciones reales ni valores SHAP calculados.",
+    "accuracy": "Exactitud · evaluación sintética",
+    "weightedRecall": "Recall ponderado · evaluación sintética",
+    "weightedF1": "F1 ponderado · evaluación sintética",
+    "training": "Métricas e importancia global extraídas del informe de auditoría del modelo entrenado con datos sintéticos; no representan resultados de centros reales.",
+    "disclaimer": "El riesgo y la confianza por estudiante son escenarios prefijados para la demo; no los calcula el modelo. Las métricas son de evaluación sintética y los factores son importancia global, no SHAP ni explicación individual.",
     "student": "Estudiante seudonimizado",
     "horizon": "Horizonte ilustrativo: {{months}} meses",
     "results": "Resultados de la simulación",
@@ -163,15 +160,17 @@
     "simulatedValue": "Valor simulado · No es un pronóstico",
     "confidence": "Confianza ilustrativa: {{value}}",
     "confidenceNote": "La confianza es un ejemplo no calibrado; no representa certeza sobre este estudiante.",
-    "factorsTitle": "Factores determinantes",
-    "factorsSubtitle": "Explicabilidad SHAP / Feature Importance · Ejemplo visual",
+    "factorsTitle": "Importancia global de variables",
+    "factorsSubtitle": "Qué variables influyeron más en el modelo durante su evaluación sintética",
     "factors": {
-      "absences": "Tasa de inasistencias recientes",
-      "submissions": "Tendencia decreciente en entregas",
-      "resources": "Desconexión de recursos ProFuturo",
-      "connectivity": "Brecha de conectividad domiciliaria"
+      "grades": "Rendimiento académico",
+      "consecutiveAbsences": "Faltas consecutivas",
+      "resources": "Uso de recursos ProFuturo",
+      "attendance": "Asistencia",
+      "connectivity": "Brecha de conectividad",
+      "teacherTraining": "Formación docente"
     },
-    "weightsNote": "Pesos relativos ilustrativos (total: 100%). No son puntos de probabilidad, efectos causales ni aportaciones SHAP calculadas; se mantiene el mismo ejemplo de factores al alternar estudiantes.",
+    "weightsNote": "Importancia relativa global (total aproximado: 100%). No describe el riesgo del estudiante seleccionado, no demuestra causalidad y no equivale a aportaciones SHAP.",
     "noExample": "Este registro no tiene un escenario de demostración. No se generan probabilidades simuladas para estudiantes reales.",
     "humanReview": "La decisión y el plan de apoyo corresponden al docente, tras revisar las métricas y el contexto real.",
     "toPlan": "Trasladar a Plan de Intervención Docente",
@@ -294,7 +293,13 @@
     "grade": "Nota media (0–10)",
     "observations": "Observaciones pedagógicas",
     "connectivity": "Conectividad",
-    "connectivityOptions": { "unknown": "No registrada", "low_none": "Baja / nula", "intermittent": "Intermitente", "medium": "Media", "good": "Buena" },
+    "connectivityOptions": {
+      "unknown": "No registrada",
+      "low_none": "Baja / nula",
+      "intermittent": "Intermitente",
+      "medium": "Media",
+      "good": "Buena"
+    },
     "risk": "Señal de riesgo",
     "enrollment": "Situación académica",
     "status": {
@@ -314,7 +319,42 @@
     "deleteConfirm": "¿Eliminar este estudiante y todos sus planes e historial?",
     "manage": "Gestionar",
     "noMatches": "Sin coincidencias",
-    "noMatchesText": "No hay estudiantes para esta búsqueda."
+    "noMatchesText": "No hay estudiantes para esta búsqueda.",
+    "importCsv": "Importar CSV",
+    "downloadTemplate": "Descargar plantilla",
+    "chooseCsv": "Elegir archivo CSV",
+    "importHelp": "Descarga el CSV de demostración con 30 estudiantes ficticios o una plantilla vacía para tus propios datos. Puedes cargar hasta 500 registros; revisa la vista previa antes de guardar. Para datos reales, usa solo códigos seudonimizados, nunca nombres ni datos sensibles.",
+    "importDemoNotice": "{{count}} registros están marcados como datos de demostración y no como alumnos reales.",
+    "importCsvOnly": "Selecciona un archivo con formato CSV.",
+    "importFileTooLarge": "El archivo supera el límite de 2 MB.",
+    "importReadError": "No se pudo leer el archivo. Comprueba que sea un CSV válido.",
+    "importLimit": "El límite por importación es de {{count}} estudiantes.",
+    "importMissingColumns": "Faltan columnas obligatorias: {{columns}}.",
+    "importPreview": "{{count}} estudiantes válidos listos para importar.",
+    "importNoRows": "No hay filas válidas para importar.",
+    "importMoreValid": "Y {{count}} estudiantes válidos más.",
+    "importSkipped": "{{count}} filas no se importarán:",
+    "importLineError": "Fila {{line}}: {{message}}",
+    "importDuplicateExisting": "El código {{code}} ya existe en este centro.",
+    "importDuplicateFile": "El código {{code}} está repetido en el archivo.",
+    "importInvalidFields": "Revisa estos campos: {{fields}}.",
+    "importMoreErrors": "Y {{count}} errores más.",
+    "importConfirm": "Importar {{count}} estudiantes válidos",
+    "importing": "Importando…",
+    "importSuccess": "Se importaron {{count}} estudiantes.",
+    "importDuplicateRace": "Uno de esos códigos acaba de añadirse desde otra sesión. Actualiza la lista y vuelve a revisar el archivo.",
+    "importFailed": "No se pudo completar la importación. No se guardó este lote; inténtalo de nuevo.",
+    "importFields": {
+      "code": "código",
+      "course": "curso",
+      "attendance": "asistencia",
+      "submissions": "entregas",
+      "resource_usage": "uso de recursos",
+      "grade": "nota",
+      "connectivity": "conectividad",
+      "enrollment_status": "situación académica",
+      "observations": "observaciones"
+    }
   },
   "plansCloud": {
     "new": "Plan de apoyo asistido",
@@ -353,6 +393,11 @@
     "completedPlans": "Completados",
     "refresh": "Actualizar",
     "retentionDefinition": "Retención observada: estudiantes en curso o finalizados / total registrado. No es una predicción.",
+    "alertSummaryTitle": "Seguimiento recomendado",
+    "alertSummaryText": "Señales por reglas transparentes; revisa el contexto antes de decidir apoyos.",
+    "priorityAlerts": "Prioritarias: {{count}}",
+    "attentionAlerts": "En atención: {{count}}",
+    "openAlerts": "Revisar alertas",
     "empty": "Tu centro aún no tiene registros",
     "emptyDirector": "Invita a docentes para comenzar el seguimiento educativo del centro.",
     "groups": "Indicadores por curso",
@@ -425,6 +470,7 @@
     "coverage_one": "Hasta {{count}} centro",
     "coverage_other": "Hasta {{count}} centros",
     "available": "{{count}} cupos de centro disponibles",
+    "capacityUse": "{{used}} de {{capacity}} cupos asignados",
     "soldOut": "Cupos agotados",
     "contract": "Contratar",
     "select": "Paquete seleccionado",
@@ -475,11 +521,7 @@
       "pilot": {
         "name": "Paquete Piloto Escuela Rural",
         "description": "Despliegue en un centro educativo.",
-        "features": [
-          "Soporte técnico",
-          "Sincronización offline",
-          "Taller inicial docente"
-        ]
+        "features": ["Soporte técnico", "Sincronización offline", "Taller inicial docente"]
       },
       "district": {
         "name": "Programa Distrito Educativo",
