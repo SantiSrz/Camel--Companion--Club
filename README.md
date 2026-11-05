@@ -1,5 +1,7 @@
 # EduPulse
 
+Repositorio: https://github.com/SantiSrz/Camel--Companion--Club.git
+
 Plataforma de seguimiento educativo para ayudar a docentes y centros a revisar indicadores, detectar señales tempranas y organizar apoyos pedagógicos. Proyecto presentado a **#hack4edu 2026**, en el reto ProFuturo de educación digital inclusiva.
 
 > **Estado del producto:** MVP de hackathon. Las señales actuales son reglas transparentes. La pantalla de predicciones combina una auditoría de modelo entrenado con datos sintéticos y un índice didáctico para registros de demostración; no ofrece predicciones reales de abandono. Consulta [Limitaciones y uso responsable](#limitaciones-y-uso-responsable).
