@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
-import { ArrowRight, FlaskConical, GitBranch, ShieldCheck } from "lucide-react";
+import { ArrowRight, FlaskConical, GitBranch } from "lucide-react";
 import { DEMO_MODEL, getDemoPrediction } from "@/lib/edu/prediction-demo";
 import type { CloudStudent } from "@/lib/edu/store";
 import { EduSelect } from "@/components/edu/EduSelect";
@@ -13,19 +13,21 @@ const FACTOR_TONES = [
   "prediction-factor-warning",
   "prediction-factor-muted",
   "prediction-factor-secondary",
-  "prediction-factor-warning",
 ];
+const GLOBAL_FACTOR_TONES = [...FACTOR_TONES, "prediction-factor-warning"];
 
 export function PredictionDemo({ students }: { students: CloudStudent[] }) {
   const { t, i18n } = useTranslation();
   const [selectedId, setSelectedId] = useState("");
+  const demoStudents = students.filter((s) => s.is_sample);
   const student =
-    students.find((s) => s.id === selectedId) ??
-    students.find((s) => s.code === "ALU-8102" && s.is_sample) ??
-    students[0];
+    demoStudents.find((s) => s.id === selectedId) ??
+    demoStudents.find((s) => s.code === "ALU-8102") ??
+    demoStudents[0];
   const result = student ? getDemoPrediction(student) : null;
   const number = new Intl.NumberFormat(i18n.language, { maximumFractionDigits: 1 });
   const percent = (value: number) => `${number.format(value)}%`;
+  const score = (value: number) => number.format(value);
   return (
     <>
       <section className="border-y-2 py-5" aria-label={t("predictionDemo.modelHeader")}>
@@ -81,11 +83,14 @@ export function PredictionDemo({ students }: { students: CloudStudent[] }) {
             value={student?.id ?? ""}
             onChange={setSelectedId}
             placeholder={t("cloud.select")}
-            options={students.map((s) => ({ value: s.id, label: `${s.code} · ${s.course}` }))}
+            options={demoStudents.map((s) => ({
+              value: s.id,
+              label: `${s.code} · ${s.course} · ${t("common.demoData")}`,
+            }))}
           />
         </div>
         <span className="text-sm font-bold text-muted-foreground">
-          {t("predictionDemo.horizon", { months: DEMO_MODEL.horizonMonths })}
+          {t("predictionDemo.noForecastHorizon")}
         </span>
       </div>
       {student && result ? (
@@ -103,7 +108,7 @@ export function PredictionDemo({ students }: { students: CloudStudent[] }) {
                 className="size-36 shrink-0"
                 viewBox="0 0 144 144"
                 role="img"
-                aria-label={t("predictionDemo.riskValue", { value: percent(result.risk) })}
+                aria-label={t("predictionDemo.riskValue", { value: score(result.riskIndex) })}
               >
                 <circle
                   cx="72"
@@ -122,7 +127,7 @@ export function PredictionDemo({ students }: { students: CloudStudent[] }) {
                   strokeWidth="10"
                   strokeLinecap="round"
                   pathLength="100"
-                  strokeDasharray={`${result.risk} 100`}
+                  strokeDasharray={`${result.riskIndex} 100`}
                   transform="rotate(-90 72 72)"
                 />
                 <text
@@ -131,7 +136,7 @@ export function PredictionDemo({ students }: { students: CloudStudent[] }) {
                   textAnchor="middle"
                   className="fill-foreground text-3xl font-black"
                 >
-                  {percent(result.risk)}
+                  {score(result.riskIndex)}
                 </text>
               </svg>
               <div className="min-w-0">
@@ -141,15 +146,36 @@ export function PredictionDemo({ students }: { students: CloudStudent[] }) {
                 <p className="mt-1 text-xs text-muted-foreground">
                   {t("predictionDemo.simulatedValue")}
                 </p>
-                <div className="mt-5 flex items-center gap-2 text-sm font-bold">
-                  <ShieldCheck className="size-4 shrink-0 text-secondary" aria-hidden />
-                  <span>
-                    {t("predictionDemo.confidence", { value: percent(result.confidence) })}
-                  </span>
-                </div>
               </div>
             </div>
-            <p className="text-xs text-muted-foreground">{t("predictionDemo.confidenceNote")}</p>
+            <div className="space-y-3 border-t pt-4">
+              <h3 className="text-sm font-black">{t("predictionDemo.studentFactorsTitle")}</h3>
+              <p className="text-xs text-muted-foreground">{t("predictionDemo.scoreMethod")}</p>
+              {result.factors.map((factor, index) => {
+                const observed =
+                  factor.unit === "connectivity"
+                    ? t(`students.connectivityOptions.${factor.value}`)
+                    : factor.unit === "grade"
+                      ? `${number.format(Number(factor.value))}/10`
+                      : `${number.format(Number(factor.value))}%`;
+                return (
+                  <div key={factor.key} className={FACTOR_TONES[index]}>
+                    <div className="mb-1 flex items-center justify-between gap-3 text-xs">
+                      <span className="font-bold">{t(`predictionDemo.factors.${factor.key}`)}</span>
+                      <span className="shrink-0 tabular-nums">
+                        {observed} · {number.format(factor.points)} {t("predictionDemo.points")}
+                      </span>
+                    </div>
+                    <progress
+                      className="prediction-factor-meter block h-2 w-full"
+                      value={factor.share}
+                      max={100}
+                      aria-label={t(`predictionDemo.factors.${factor.key}`)}
+                    />
+                  </div>
+                );
+              })}
+            </div>
           </div>
           <div className="min-w-0 border-t-2 pt-6 lg:border-l-2 lg:border-t-0 lg:pl-8 lg:pt-0">
             <h2 className="text-xl">{t("predictionDemo.factorsTitle")}</h2>
@@ -157,8 +183,8 @@ export function PredictionDemo({ students }: { students: CloudStudent[] }) {
               {t("predictionDemo.factorsSubtitle")}
             </p>
             <div className="mt-6 space-y-5">
-              {result.factors.map((factor, index) => (
-                <div key={factor.key} className={FACTOR_TONES[index]}>
+              {DEMO_MODEL.factors.map((factor, index) => (
+                <div key={factor.key} className={GLOBAL_FACTOR_TONES[index]}>
                   <div className="mb-2 flex items-start justify-between gap-4 text-sm">
                     <span className="min-w-0 font-bold">
                       {t(`predictionDemo.factors.${factor.key}`)}
@@ -186,7 +212,9 @@ export function PredictionDemo({ students }: { students: CloudStudent[] }) {
         </section>
       ) : (
         <p className="my-8 text-sm text-muted-foreground" role="status">
-          {t(student ? "predictionDemo.noExample" : "students.emptyText")}
+          {t(
+            demoStudents.length > 0 ? "predictionDemo.noExample" : "predictionDemo.noDemoStudents",
+          )}
         </p>
       )}
       {student && (

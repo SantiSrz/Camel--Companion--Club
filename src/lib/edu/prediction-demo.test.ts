@@ -1,19 +1,50 @@
 import { describe, expect, it } from "vitest";
 import { DEMO_MODEL, getDemoPrediction } from "./prediction-demo";
 import { findHandoffStudent, planHandoffSearch } from "./plan-handoff";
+import { parseStudentsCsv, STUDENT_CSV_TEMPLATE } from "./csv";
 
 describe("explicit hackathon simulation", () => {
-  it.each([
-    ["ALU-8102", 78],
-    ["ALU-4319", 34],
-    ["ALU-9025", 8],
-  ])("uses the supplied %s three-month example without inference", (code, risk) => {
-    expect(getDemoPrediction({ code, is_sample: true })).toMatchObject({
-      risk,
-      horizonMonths: 3,
-      mode: "simulation",
-      confidence: 92,
-    });
+  const sample = {
+    code: "DEMO-001",
+    is_sample: true,
+    attendance: 80,
+    grade: 6,
+    submissions: 50,
+    resource_usage: 40,
+    connectivity: "intermittent",
+  };
+  it("calculates a transparent illustrative score from the selected sample's actual metrics", () => {
+    const prediction = getDemoPrediction(sample);
+    expect(prediction?.riskIndex).toBe(41);
+    expect(prediction?.factors.map((factor) => factor.points)).toEqual([6, 10, 10, 9, 6]);
+    expect(prediction?.factors.reduce((sum, factor) => sum + factor.points, 0)).toBe(41);
+  });
+  it("scores a sample with no measured gaps as zero and the maximum gaps as 100", () => {
+    expect(
+      getDemoPrediction({
+        ...sample,
+        attendance: 100,
+        grade: 10,
+        submissions: 100,
+        resource_usage: 100,
+        connectivity: "good",
+      })?.riskIndex,
+    ).toBe(0);
+    expect(
+      getDemoPrediction({
+        ...sample,
+        attendance: 0,
+        grade: 0,
+        submissions: 0,
+        resource_usage: 0,
+        connectivity: "low_none",
+      })?.riskIndex,
+    ).toBe(100);
+  });
+  it("renders a demo score for every row in the downloadable 30-student sample", () => {
+    const csv = parseStudentsCsv(STUDENT_CSV_TEMPLATE);
+    expect(csv.rows).toHaveLength(30);
+    expect(csv.rows.every((student) => getDemoPrediction(student) !== null)).toBe(true);
   });
   it("reports the checked-in synthetic-data audit metrics", () => {
     expect(DEMO_MODEL).toMatchObject({
@@ -29,16 +60,20 @@ describe("explicit hackathon simulation", () => {
     ]);
     expect(DEMO_MODEL.factors.reduce((sum, factor) => sum + factor.weight, 0)).toBeCloseTo(100, 1);
   });
-  it("never generates probabilities for real or unknown students", () => {
-    expect(getDemoPrediction({ code: "ALU-8102", is_sample: false })).toBeNull();
-    expect(getDemoPrediction({ code: "ALU-OTHER", is_sample: true })).toBeNull();
+  it("never generates a demo score for a real student", () => {
+    expect(getDemoPrediction({ ...sample, is_sample: false })).toBeNull();
   });
 });
 describe("human review handoff", () => {
   const studentId = "11111111-1111-4111-8111-111111111111";
   it("keeps only the selected student reference and simulation source, not predictions", () => {
     expect(
-      planHandoffSearch.parse({ studentId, source: "predictionDemo", risk: 78, reviewed: true }),
+      planHandoffSearch.parse({
+        studentId,
+        source: "predictionDemo",
+        riskIndex: 41,
+        reviewed: true,
+      }),
     ).toEqual({ studentId, source: "predictionDemo" });
   });
   it("ignores malformed student links", () => {
